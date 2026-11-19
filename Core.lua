@@ -8,7 +8,7 @@ ns.ICON_TITLE = "Interface\\AddOns\\ShoutOut\\Media\\IconTitle"
 ns.ICON_MINIMAP = "Interface\\AddOns\\ShoutOut\\Media\\IconMinimap" -- the LFW megaphone (Nate's artwork, 256x256)
 ShoutOut = ns -- global handle for macros: /run ShoutOut.Post()
 
-ns.VERSION = "1.0.2"
+ns.VERSION = "1.0.3"
 ns.MAX_LEN = 255   -- characters players see (links count as their [Name])
 ns.MAX_RAW = 1000  -- full length incl. hidden link code. WoW Forever takes far more than
                    -- the 448 once measured (10 recipe links in one line post fine), so
