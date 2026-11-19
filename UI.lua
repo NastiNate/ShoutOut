@@ -144,12 +144,12 @@ local function AcquireRow(i)
 
     -- Crafted items: price in three boxes, gold / silver / copper (numbers only)
     r.money = CreateFrame("Frame", nil, r)
-    r.money:SetSize(116, 18)
+    r.money:SetSize(120, 18)
     r.money:SetPoint("RIGHT", -28, 0)
     local COINS = {
-        { key = "g", w = 44, max = 5, icon = "Interface\\MoneyFrame\\UI-GoldIcon", name = "Gold" },
-        { key = "s", w = 34, max = 2, icon = "Interface\\MoneyFrame\\UI-SilverIcon", name = "Silver" },
-        { key = "c", w = 34, max = 2, icon = "Interface\\MoneyFrame\\UI-CopperIcon", name = "Copper" },
+        { key = "g", w = 52, max = 4, icon = "Interface\\MoneyFrame\\UI-GoldIcon", name = "Gold" },
+        { key = "s", w = 32, max = 2, icon = "Interface\\MoneyFrame\\UI-SilverIcon", name = "Silver" },
+        { key = "c", w = 32, max = 2, icon = "Interface\\MoneyFrame\\UI-CopperIcon", name = "Copper" },
     }
     r.coin = {}
     local function ReadCoins()
@@ -432,7 +432,7 @@ local function FillRow(r, it, width, ad)
     -- portals, summons and conjured food are priced in gold and silver only
     local noCopper = pricedText or e.noCopper
     r.coin.c:SetShown(not noCopper)
-    r.money:SetWidth(noCopper and 80 or 116)
+    r.money:SetWidth(noCopper and 86 or 120) -- gold 52 (4 digits), silver / copper 32
     if not e.service then r.prod:Hide() end
     if not e.item or e.service then r.unit:Hide() end
     if not e.item and not r.edit:HasFocus() then
@@ -485,7 +485,7 @@ local function FillRow(r, it, width, ad)
             r.ah:ClearAllPoints()
             r.ah:SetPoint("RIGHT", r.money, "LEFT", -4, 0)
         end
-        r.name:SetWidth(e.service and 148 or (e.noAH and 294 or (stacky and 178 or 222)))
+        r.name:SetWidth(e.service and 144 or (e.noAH and 290 or (stacky and 174 or 218)))
     else
         r.ah:Hide()
         local total, _, missing = CachedMats(e)
@@ -502,7 +502,7 @@ local function FillRow(r, it, width, ad)
             r:ShowPrice()
             r.edit:SetWidth(110)
             r.mats:Hide()
-            r.name:SetWidth(206)
+            r.name:SetWidth(200)
         else
             r.edit:SetWidth(e.custom and 150 or 174)
             r.mats:Hide()

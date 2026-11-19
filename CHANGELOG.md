@@ -1,5 +1,10 @@
 # Shout Out changelog
 
+## 1.0.1 (November 2026)
+
+- The gold price box now fits 4 digits, so prices up to 9,999g show in full.
+- The code is now open source under the MIT License (the icon artwork stays all rights reserved).
+
 ## 1.0.0 (November 2026)
 
 First public release.
