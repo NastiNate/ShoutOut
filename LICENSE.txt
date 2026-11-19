@@ -1,15 +1,33 @@
-Shout Out - World of Warcraft addon
-Copyright (c) 2026 Nate. All rights reserved.
+MIT License
 
-This software, including its code, artwork and icons, is the property of the
-author. You may download and use it for personal, non-commercial play.
+Copyright (c) 2026 Nate (NastiNate)
 
-You may not copy, modify, redistribute, re-upload, sell, or include any part of
-it in another project without the author's written permission.
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY ARISING FROM THE USE OF THE SOFTWARE.
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+-------------------------------------------------------------------------------
+Artwork
+
+The MIT License above covers the code only. The Shout Out icon artwork
+(Media/Icon.tga, Media/IconTitle.tga, Media/IconMinimap.tga and
+.github/icon.png) is Copyright (c) 2026, all rights reserved, and is used in
+Shout Out with permission. It may not be reused in other projects without the
+artist's permission.
 
 World of Warcraft is a trademark of Blizzard Entertainment, Inc. This addon is
 not affiliated with or endorsed by Blizzard Entertainment.

@@ -65,4 +65,6 @@ Full instructions are on the **How it Works** page inside the addon.
 
 Found a bug or have an idea? [Open an issue](https://github.com/NastiNate/ShoutOut/issues/new/choose): there's a short form for each. If you use BugSack, include the error text.
 
-Copyright (c) 2026 Nate. All rights reserved. See [LICENSE.txt](LICENSE.txt).
+## License
+
+The code is open source under the [MIT License](LICENSE.txt): you're welcome to use, change and share it, as long as you keep the copyright notice. The icon artwork isn't covered by the MIT License and stays all rights reserved (see [LICENSE.txt](LICENSE.txt)).
