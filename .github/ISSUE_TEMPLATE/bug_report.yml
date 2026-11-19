@@ -1,0 +1,49 @@
+name: Bug report
+description: Something isn't working the way it should
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for taking the time to report this! The more detail, the faster it gets fixed.
+  - type: input
+    id: version
+    attributes:
+      label: Shout Out version
+      description: Shown at the top of the Shout Out window, next to the name.
+      placeholder: "1.0.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: adtype
+    attributes:
+      label: Which ad type?
+      options: [Enchanting, Leatherworking, Alchemy, Blacksmithing, Tailoring, Engineering, Cooking, Mage, Warlock, Custom, Not about one ad type]
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: How can I make it happen?
+      description: The steps that lead to the problem.
+      placeholder: |
+        1. Open Shout Out
+        2. Check ...
+        3. Press Post
+  - type: textarea
+    id: error
+    attributes:
+      label: Lua error (if any)
+      description: If you use BugSack, paste the error here. Otherwise leave it empty.
+      render: text
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Screenshot
+      description: Drag a screenshot in here if it helps show the problem.

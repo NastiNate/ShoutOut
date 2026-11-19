@@ -1,0 +1,5 @@
+package-as: ShoutOut
+ignore:
+  - .github
+  - .gitignore
+  - .pkgmeta

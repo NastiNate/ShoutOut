@@ -1,0 +1,26 @@
+## Interface: 16001, 120100, 120105
+## Title: |cffb48cffShout Out|r
+## Notes: Build and post trade chat ads for your crafts, portals, summons and bag items. Packs them into the 255-character limit and rotates the rest.
+## Author: Nate
+## Version: 1.0.0
+## IconTexture: Interface\AddOns\ShoutOut\Media\Icon
+## AddonCompartmentFunc: ShoutOut_OnCompartmentClick
+## SavedVariablesPerCharacter: ShoutOutDB
+
+Data.lua
+Professions\EnchantingMats.lua
+Professions\Leatherworking.lua
+Professions\Alchemy.lua
+Professions\Blacksmithing.lua
+Professions\Tailoring.lua
+Professions\Engineering.lua
+Professions\Cooking.lua
+Professions\Mage.lua
+Professions\Warlock.lua
+Professions\Custom.lua
+Core.lua
+Widgets.lua
+HowItWorks.lua
+UI.lua
+MiniBar.lua
+Minimap.lua

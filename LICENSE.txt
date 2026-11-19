@@ -1,0 +1,15 @@
+Shout Out - World of Warcraft addon
+Copyright (c) 2026 Nate. All rights reserved.
+
+This software, including its code, artwork and icons, is the property of the
+author. You may download and use it for personal, non-commercial play.
+
+You may not copy, modify, redistribute, re-upload, sell, or include any part of
+it in another project without the author's written permission.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY ARISING FROM THE USE OF THE SOFTWARE.
+
+World of Warcraft is a trademark of Blizzard Entertainment, Inc. This addon is
+not affiliated with or endorsed by Blizzard Entertainment.

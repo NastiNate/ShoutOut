@@ -1,0 +1,8 @@
+<Bindings>
+    <Binding name="SHOUTOUT_POST" header="SHOUTOUT" category="ADDONS">
+        ShoutOut_Post()
+    </Binding>
+    <Binding name="SHOUTOUT_TOGGLE" category="ADDONS">
+        ShoutOut_Toggle()
+    </Binding>
+</Bindings>
