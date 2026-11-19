@@ -1039,9 +1039,9 @@ local function UpdatePreview()
     local c = (ratio < 0.85) and col.good or (ratio < 0.97 and col.warn or col.accent)
     ui.meterFill:SetVertexColor(unpack(c))
     local rawNote = ""
-    if #msg ~= len then
-        local tight = #msg / ns.MaxRaw() > len / ns.MaxLen()
-        rawNote = (tight and "  |cffffc857" or "  |cff6a6a75") .. "(" .. #msg .. "/" .. ns.MaxRaw() .. " with link code)|r"
+    -- the hidden link code only matters once it's the tighter limit
+    if #msg ~= len and #msg / ns.MaxRaw() > len / ns.MaxLen() then
+        rawNote = "  |cffffc857(" .. #msg .. "/" .. ns.MaxRaw() .. " with link code)|r"
     end
     ui.meterText:SetText(len .. " / " .. ns.MaxLen() .. rawNote)
 

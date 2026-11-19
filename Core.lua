@@ -8,10 +8,12 @@ ns.ICON_TITLE = "Interface\\AddOns\\ShoutOut\\Media\\IconTitle"
 ns.ICON_MINIMAP = "Interface\\AddOns\\ShoutOut\\Media\\IconMinimap" -- the LFW megaphone (Nate's artwork, 256x256)
 ShoutOut = ns -- global handle for macros: /run ShoutOut.Post()
 
-ns.VERSION = "1.0.1"
+ns.VERSION = "1.0.2"
 ns.MAX_LEN = 255   -- characters players see (links count as their [Name])
-ns.MAX_RAW = 448   -- full-length limit incl. hidden link code, measured in WoW Forever
-                   -- (Nov 2026: 448 sent, a few more refused). Was 280 before measuring.
+ns.MAX_RAW = 1000  -- full length incl. hidden link code. WoW Forever takes far more than
+                   -- the 448 once measured (10 recipe links in one line post fine), so
+                   -- this is only a ceiling: if WoW refuses a post, Shout Out trims it,
+                   -- sends the shorter one in the same click, and remembers the limit.
 -- A lower limit learned when WoW refused a post (settings.maxRaw) wins if set.
 function ns.MaxRaw() return (ns.db and ns.db.settings.maxRaw) or ns.MAX_RAW end
 -- The visible limit. WoW's own count can come out a little higher than
@@ -216,6 +218,12 @@ function ns.InitDB()
     if db.profLink then db.profLinks.enchanting = db.profLink; db.profLink = nil end
     db.slotOrders = db.slotOrders or {}
     if db.slotOrder then db.slotOrders.enchanting = db.slotOrder; db.slotOrder = nil end
+    -- 1.0.2: the old 448 (and any limit learned against it) held ads back; start
+    -- clean, the post itself finds the real limit if there is one
+    if not db.limitsV2 then
+        db.settings.maxRaw, db.settings.maxVis = nil, nil
+        db.limitsV2 = true
+    end
     db.preview = db.preview or {}      -- prof -> true: pretend you know every recipe
     db.preview.mage, db.preview.warlock = nil, nil -- class ads are open to everyone now
     db.names = db.names or {}          -- id -> name, remembered from your profession window
@@ -1557,13 +1565,19 @@ function ns.Post(adIndex)
     -- time and send the shorter ad, all in this same click. The new limit is
     -- kept, so later posts fit the first time.
     local st, tries, lowered = ns.db.settings, 0, false
-    while not ok and tostring(err):find("limits exceeded") and tries < 8 do
+    while not ok and tostring(err):find("limits exceeded") and tries < 40 do
         tries = tries + 1
         local vis, raw = ns.VisibleLength(msg), #msg
-        if raw / ns.MaxRaw() >= vis / ns.MaxLen() then
-            st.maxRaw = math.max(200, math.min(ns.MaxRaw(), raw) - 8)
+        -- The visible limit is known to sit right around 255, so a refused post
+        -- well under it was too long in link code: lower that. A post right at
+        -- the visible limit lowers the visible limit instead (WoW counts a few
+        -- things, like pipes, a little differently). Each limit only learns
+        -- from its own kind of refusal, so a text-heavy ad can't shrink the
+        -- room link-heavy ads get, or the other way round.
+        if vis < ns.MaxLen() - 15 or (st.maxVis or ns.MAX_LEN) <= 225 then
+            st.maxRaw = math.max(200, math.min(ns.MaxRaw(), raw) - 24)
         else
-            st.maxVis = math.max(200, math.min(ns.MaxLen(), vis) - 3)
+            st.maxVis = math.max(225, math.min(ns.MaxLen(), vis) - 3)
         end
         lowered = true
         msg = ns.Build(ad)

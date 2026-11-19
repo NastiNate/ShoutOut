@@ -1,5 +1,10 @@
 # Shout Out changelog
 
+## 1.0.2 (November 2026)
+
+- Link-heavy ads (crafted items) are no longer held back by an old 448-character link-code limit: WoW Forever accepts much more. If WoW ever refuses a post as too long, Shout Out trims it, posts the shorter ad in the same click, and remembers the limit.
+- The "with link code" count under the preview only shows when it's the limit that matters.
+
 ## 1.0.1 (November 2026)
 
 - The gold price box now fits 4 digits, so prices up to 9,999g show in full.
