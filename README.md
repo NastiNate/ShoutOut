@@ -2,7 +2,7 @@
 
 # Shout Out
 
-Build clean, eye-catching Trade chat ads for your professions and class services. Check what you sell, set your prices, and post in one click. Shout Out packs everything into WoW's 255-character limit for you.
+Build clean, efficient Trade chat ads for your professions and class services. Check what you sell, set your prices, and post in one click. Shout Out packs everything into WoW's 255-character limit for you.
 
 ## Features
 
@@ -29,7 +29,7 @@ Build clean, eye-catching Trade chat ads for your professions and class services
 ## Installing
 
 - **CurseForge app:** search for Shout Out and click Install.
-- **Manually:** download the latest zip from [Releases](https://github.com/NastiNate/ShoutOut/releases), unzip it, and put the `ShoutOut` folder in `World of Warcraft\_classic_beta_\Interface\AddOns`. Restart the game.
+- **Manually:** download the latest zip from [Releases](https://github.com/NastiNate/ShoutOut/releases), unzip it, and put the `ShoutOut` folder in `World of Warcraft\_forever_\Interface\AddOns`. Restart the game.
 
 ## Getting started
 
