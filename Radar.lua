@@ -24,9 +24,14 @@ local KEYWORDS = {
 }
 ns.RADAR_KEYWORDS = KEYWORDS
 
--- a buyer asks; a seller advertises (those are skipped)
-local ASK = { lf = true, lfm = true, wtb = true, need = true, needs = true, needing = true, anyone = true }
+-- A buyer asks; a seller advertises (those are skipped).
+-- Strong asks count anywhere before what they ask for ("LF ... enchanter").
+-- "anyone" / "any" only count right before a profession word ("anyone ench?",
+-- "any enchanters around"), since sellers say them too ("if anyone wants a pair").
+local ASK = { lf = true, lfm = true, wtb = true, need = true, needs = true, needing = true }
+local WEAK = { anyone = true, any = true }
 local SELLER = { wts = true, lfw = true, selling = true, sell = true, wtt = true }
+local SELLER_PHRASES = { "on ah", "for sale", "in stock" }
 
 -- "|cff..|Hitem:123|h[Hide of the Wild]|h|r 5g!" -> "hide of the wild 5g"
 local function Plain(msg)
@@ -96,34 +101,59 @@ function ns.RadarMatch(msg)
     local words, set = {}, {}
     for w in plain:gmatch("%S+") do words[#words + 1] = w; set[w] = true end
     for w in pairs(SELLER) do if set[w] then return end end
-    local asks = false
-    for w in pairs(ASK) do if set[w] then asks = true break end end
-    if not asks and not plain:find("looking for", 1, true) then return end
+    local padded = " " .. plain .. " "
+    for _, p in ipairs(SELLER_PHRASES) do if padded:find(" " .. p .. " ", 1, true) then return end end
+    -- where the asks are (word positions)
+    local strong, weak = nil, {}
+    for i, w in ipairs(words) do
+        if ASK[w] or (w == "looking" and words[i + 1] == "for") then strong = strong or i end
+        if WEAK[w] then weak[#weak + 1] = i end
+    end
+    if not strong and #weak == 0 then return end
+    -- word position of a phrase in the message
+    local function PosOf(phrase)
+        local a = padded:find(" " .. phrase .. " ", 1, true)
+        if not a then return end
+        local n = 1
+        for _ in padded:sub(1, a):gmatch("%S+") do n = n + 1 end
+        return n
+    end
+    local function AskedBefore(pos, isProfWord)
+        if strong and strong < pos then return true end
+        if isProfWord then
+            for _, i in ipairs(weak) do if i < pos and pos - i <= 3 then return true end end
+        end
+        return false
+    end
 
     local idx = Index()
-    local padded = " " .. plain .. " "
     local hit
-    -- a pasted link to something you make
-    for kind, id in raw:gmatch("|H(%a+):(%d+)") do
-        local k = (kind == "item" and "item:" or "spell:") .. id
-        if (kind == "enchant" or kind == "spell" or kind == "item") and idx.ids[k] then
-            hit = { prof = idx.ids[k].prof, what = idx.ids[k].name }
-            break
+    -- a pasted link to something you make (needs a strong ask)
+    if strong then
+        for kind, id in raw:gmatch("|H(%a+):(%d+)") do
+            local k = (kind == "item" and "item:" or "spell:") .. id
+            if (kind == "enchant" or kind == "spell" or kind == "item") and idx.ids[k] then
+                hit = { prof = idx.ids[k].prof, what = idx.ids[k].name }
+                break
+            end
         end
     end
-    -- the profession's name ("LF enchanter"), then what you make ("LF Crusader")
+    -- the profession's name ("LF enchanter"), asked for before it
     if not hit then
         for prof in pairs(idx.profs) do
             for _, kw in ipairs(KEYWORDS[prof]) do
-                if set[kw] then hit = { prof = prof, kw = kw } break end
+                local pos = set[kw] and PosOf(kw)
+                if pos and AskedBefore(pos, true) then hit = { prof = prof, kw = kw } break end
             end
             if hit then break end
         end
     end
+    -- something you make ("LF Crusader"), after a strong ask
     local function NameIn(prof)
         local best
         for name, label in pairs(idx.names[prof] or {}) do
-            if padded:find(" " .. name .. " ", 1, true) and (not best or #name > #best) then best = name; hit.what = label end
+            local pos = PosOf(name)
+            if pos and AskedBefore(pos, false) and (not best or #name > #best) then best = name; hit.what = label end
         end
         return best
     end
@@ -275,7 +305,8 @@ function ns.OnRadarMessage(msg, sender, channelBaseName)
     table.insert(cards, 1, card)
     while #cards > MAX_CARDS do Remove(cards[#cards]) end
     Layout()
-    if s.radarSound and PlaySound and SOUNDKIT then PlaySound(SOUNDKIT.TELL_MESSAGE or 3081, "Master") end
+    -- a map-ping blip, so a card never sounds like a real whisper
+    if s.radarSound and PlaySound and SOUNDKIT then PlaySound(SOUNDKIT.MAP_PING or 3175, "Master") end
 
     -- exactly "LF enchanter" (etc.): invite on its own, if that's turned on
     if hit.exact and s.radarAuto and not ns.OtherInviter() then
