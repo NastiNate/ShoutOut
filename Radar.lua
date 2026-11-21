@@ -24,8 +24,10 @@ ns.RADAR_KEYWORDS = KEYWORDS
 -- "any enchanters around"), since sellers say them too ("if anyone wants a pair").
 local ASK = { lf = true, lfm = true, wtb = true, need = true, needs = true, needing = true }
 local WEAK = { anyone = true, any = true }
-local SELLER = { wts = true, lfw = true, selling = true, sell = true, wtt = true }
-local SELLER_PHRASES = { "on ah", "for sale", "in stock" }
+local SELLER = { wts = true, lfw = true, selling = true, sell = true, wtt = true,
+    available = true, avail = true }
+local SELLER_PHRASES = { "on ah", "for sale", "in stock", "lf work", "lf customers", "lf business",
+    "tips appreciated", "tips welcome", "your mats", "ur mats", "my services" }
 
 -- "|cff..|Hitem:123|h[Hide of the Wild]|h|r 5g!" -> "hide of the wild 5g"
 -- With noLinks, each link becomes the word "zzlink" instead, so the words
@@ -92,6 +94,8 @@ function ns.RadarReindex() index = nil end
 -- Returns { prof, what, exact } or nil.
 function ns.RadarMatch(msg)
     local raw = tostring(msg or "")
+    -- a link to someone's profession window ([Enchanting]) is a seller showing what they can do
+    if raw:find("|Htrade:", 1, true) then return end
     local plain = Plain(raw, true)
     if plain == "" then return end
     local words, set = {}, {}
@@ -106,6 +110,14 @@ function ns.RadarMatch(msg)
         if WEAK[w] then weak[#weak + 1] = i end
     end
     if not strong and #weak == 0 then return end
+    -- "Enchanter LF ..." is someone introducing themselves, not asking for one
+    if strong and strong > 1 and (words[strong] == "lf" or words[strong] == "lfm" or words[strong] == "looking")
+        and not WEAK[words[strong - 2] or ""] then
+        local before = words[strong - 1]
+        for _, kws in pairs(KEYWORDS) do
+            for _, kw in ipairs(kws) do if before == kw then return end end
+        end
+    end
     -- word position of a phrase in the message
     local function PosOf(phrase)
         local a = padded:find(" " .. phrase .. " ", 1, true)
