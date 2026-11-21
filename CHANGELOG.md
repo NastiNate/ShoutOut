@@ -2,7 +2,7 @@
 
 ## 1.1.0 (November 2026)
 
-- **Customer radar:** when someone in Trade, Services, General, /say or /yell asks for something you sell ("LF enchanter", "LF ench Fiery", a linked recipe), a small card pops up with Invite, Whisper and Ignore. Capitals don't matter. Settings > Customers.
+- **Customer radar** (Enchanting): when someone in Trade, Services, General, /say or /yell asks for an enchanter or an enchant you know ("LF enchanter", "LF ench Fiery", a linked recipe), a small card pops up with Invite, Whisper and Ignore. Capitals don't matter. Settings > Customers.
 - The radar skips sellers ("WTS", "LFW", "on AH", "for sale") and only treats "anyone"/"any" as a request right before a profession word ("any enchanters around?"), so ads like "if anyone wants a pair… stacks with Fiery Enchant" don't pop up. Its sound is a soft map ping, not the whisper sound.
 - **Auto-invite exact requests** (off by default): invites on its own only when the whole message is exactly a request, like "LF enchanter" or "LF enchant Crusader".
 - Invites check first: if your group is full or you're not the leader, nothing is sent, the card's button says "Group full" or "Not leader", and the "inv" whisper auto-invite tells you why instead of claiming it invited.

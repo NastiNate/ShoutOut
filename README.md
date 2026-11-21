@@ -15,7 +15,7 @@ Build clean, efficient Trade chat ads for your professions and class services. C
 - **Quick-post bar:** a small movable bar to post, switch ads and see your timer.
 - **Reminders:** optional timer, sound and flashing outline when it's time to post again.
 - **Auto-invite:** whispers of "inv" or "invite" get a group invite (optional).
-- **Customer radar:** spots people asking for what you sell in chat ("LF enchanter", "LF ench Fiery") and pops up a card to invite or whisper them. Optionally auto-invites exact requests.
+- **Customer radar (Enchanting):** spots people asking for an enchanter in chat ("LF enchanter", "LF ench Fiery") and pops up a card to invite or whisper them. Optionally auto-invites exact requests.
 - **Test before you post:** send the exact ad to a private channel only you can see.
 
 ## Supported ad types

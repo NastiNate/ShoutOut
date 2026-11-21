@@ -2139,7 +2139,7 @@ function ns.CreateUI()
     -- Customer radar: buyers asking in chat for what you sell
     ui.cbRadar = W.Check(inner, "Customer radar", function(v) ns.db.settings.radar = v end)
     ui.cbRadar:SetPoint("TOPLEFT", invNote, "BOTTOMLEFT", -20, -10)
-    W.Tooltip(ui.cbRadar, "Customer radar", "Watches Trade, Services, General, /say and /yell for people looking for what you sell, like \"LF enchanter\", \"LF ench Fiery\" or a linked recipe, and shows a small card with Invite, Whisper and Ignore. Only professions you really have (not previewed) and have an ad for. Capitals don't matter.")
+    W.Tooltip(ui.cbRadar, "Customer radar", "Watches Trade, Services, General, /say and /yell for people looking for what you sell, like \"LF enchanter\", \"LF ench Fiery\" or a linked recipe, and shows a small card with Invite, Whisper and Ignore. Enchanting only, and only if you really have it (not previewed) and have an Enchanting ad. Capitals don't matter.")
     ui.cbRadarSound = W.Check(inner, "Sound", function(v) ns.db.settings.radarSound = v end)
     AtColumn(ui.cbRadarSound, ui.cbRadar)
     W.Tooltip(ui.cbRadarSound, "Radar sound", "Plays a soft map-ping sound when a customer card pops up (not the whisper sound, so it never feels like a real whisper).")

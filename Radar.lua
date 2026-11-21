@@ -10,17 +10,11 @@ local _, ns = ...
 local W = ns.W
 local col = W.col
 
--- what people call each profession in chat
+-- what people call each profession in chat. The radar covers Enchanting
+-- only: it's where "LF enchanter" requests actually happen, and the other
+-- professions' words ("lock", "port", "cook", "bs") are too common in chat.
 local KEYWORDS = {
     enchanting     = { "enchanter", "enchanters", "ench", "enchant", "enchants", "enchanting", "chanter" },
-    leatherworking = { "leatherworker", "leatherworking", "lw" },
-    blacksmithing  = { "blacksmith", "blacksmithing", "smith", "bs" },
-    tailoring      = { "tailor", "tailoring" },
-    alchemy        = { "alchemist", "alchemy", "alch", "transmute", "xmute" },
-    engineering    = { "engineer", "engineering", "engi" },
-    cooking        = { "cook", "cooking" },
-    mage           = { "mage", "port", "portal", "ports", "portals" },
-    warlock        = { "warlock", "lock", "summon", "summons", "summ", "summs" },
 }
 ns.RADAR_KEYWORDS = KEYWORDS
 
