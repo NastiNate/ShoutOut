@@ -1966,6 +1966,21 @@ function ns.OtherInviter()
         return "LayerSwap"
     end
 end
+-- Can you invite someone right now? WoW refuses an invite into a full group,
+-- or from someone who isn't the leader (or a raid assistant), without telling
+-- the addon, so check first. Returns true, or false and a short reason.
+function ns.CanInvite()
+    local inGroup = type(IsInGroup) == "function" and IsInGroup() == true
+    if not inGroup then return true end
+    local raid = type(IsInRaid) == "function" and IsInRaid() == true
+    local n = type(GetNumGroupMembers) == "function" and tonumber(GetNumGroupMembers()) or 0
+    if n >= (raid and 40 or 5) then return false, "Group full" end
+    local lead = type(UnitIsGroupLeader) == "function" and UnitIsGroupLeader("player") == true
+    local assist = raid and type(UnitIsGroupAssistant) == "function" and UnitIsGroupAssistant("player") == true
+    if not (lead or assist) then return false, "Not leader" end
+    return true
+end
+
 function ns.OnWhisper(msg, sender)
     if not ns.db.settings.autoInvite or type(sender) ~= "string" or not ns.IsInviteWord(msg) then return end
     local other = ns.OtherInviter()
@@ -1976,10 +1991,17 @@ function ns.OnWhisper(msg, sender)
         end
         return
     end
+    local who = (Ambiguate and Ambiguate(sender, "short") or sender)
+    local can, why = ns.CanInvite()
+    if not can then
+        ns.Print("Couldn't invite |cffffffff" .. who .. "|r (they whispered \"" .. msg .. "\"): " ..
+            (why == "Group full" and "your group is full." or "you're not the group leader."))
+        return
+    end
     local invite = (C_PartyInfo and C_PartyInfo.InviteUnit) or InviteUnit
     if not invite then return end
     local ok = pcall(invite, sender)
-    if ok then ns.Print("Invited |cffffffff" .. (Ambiguate and Ambiguate(sender, "short") or sender) .. "|r (they whispered \"" .. msg .. "\").") end
+    if ok then ns.Print("Invited |cffffffff" .. who .. "|r (they whispered \"" .. msg .. "\").") end
 end
 ev:SetScript("OnEvent", function(_, event, arg1, ...)
     if event == "ADDON_LOADED" then

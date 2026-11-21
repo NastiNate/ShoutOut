@@ -156,9 +156,12 @@ local COOLDOWN, LIFETIME, MAX_CARDS = 180, 90, 3
 
 local function Short(name) return (Ambiguate and Ambiguate(name, "short")) or name end
 
+-- true only when the invite really went out (WoW refuses full groups and
+-- non-leaders without telling us, so ns.CanInvite checks first)
 local function Invite(name)
+    if not ns.CanInvite() then return false end
     local invite = (C_PartyInfo and C_PartyInfo.InviteUnit) or InviteUnit
-    if invite then return pcall(invite, name) end
+    if invite then return (pcall(invite, name)) end
 end
 
 local function Layout()
@@ -222,8 +225,21 @@ local function NewCard(sender, msg, hit)
         inv:SetEnabled(false)
         inv:SetAlpha(0.6)
     end
+    -- "Group full" / "Not leader" on the button while you can't invite; it
+    -- stays clickable, so once there's room one click invites
+    local function ShowState()
+        local can, why = ns.CanInvite()
+        inv:SetLabel(can and "Invite" or why)
+        inv:SetAlpha(can and 1 or 0.6)
+    end
+    ShowState()
     inv:SetScript("OnClick", function()
-        if Invite(sender) then Invited() end
+        if Invite(sender) then Invited() else ShowState() end
+    end)
+    W.Tooltip(inv, "Invite", function()
+        local can, why = ns.CanInvite()
+        if can then return "Sends " .. Short(sender) .. " a group invite." end
+        return (why == "Group full" and "Your group is full. Make room, then click to invite." or "Only the group leader can invite. Ask them to invite, or leave the group, then click.") .. " The Whisper button still works."
     end)
     wsp:SetScript("OnClick", function()
         local text = ns.db.settings.radarWhisper
