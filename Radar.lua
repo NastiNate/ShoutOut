@@ -28,10 +28,12 @@ local SELLER = { wts = true, lfw = true, selling = true, sell = true, wtt = true
 local SELLER_PHRASES = { "on ah", "for sale", "in stock" }
 
 -- "|cff..|Hitem:123|h[Hide of the Wild]|h|r 5g!" -> "hide of the wild 5g"
-local function Plain(msg)
+-- With noLinks, each link becomes the word "zzlink" instead, so the words
+-- inside someone's item ("WTB [Fiery War Axe]") are never read as a request.
+local function Plain(msg, noLinks)
     msg = tostring(msg or "")
     msg = msg:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|cn[^:|]*:", ""):gsub("|r", "")
-    msg = msg:gsub("|H.-|h%[?(.-)%]?|h", "%1")
+    msg = msg:gsub("|H.-|h%[?(.-)%]?|h", noLinks and " zzlink " or "%1")
     msg = msg:lower():gsub("[^%w]+", " ")
     return (msg:gsub("^%s+", ""):gsub("%s+$", ""))
 end
@@ -90,7 +92,7 @@ function ns.RadarReindex() index = nil end
 -- Returns { prof, what, exact } or nil.
 function ns.RadarMatch(msg)
     local raw = tostring(msg or "")
-    local plain = Plain(raw)
+    local plain = Plain(raw, true)
     if plain == "" then return end
     local words, set = {}, {}
     for w in plain:gmatch("%S+") do words[#words + 1] = w; set[w] = true end
@@ -142,21 +144,31 @@ function ns.RadarMatch(msg)
             if hit then break end
         end
     end
-    -- something you make ("LF Crusader"), after a strong ask
-    local function NameIn(prof)
+    -- something you make ("LF Crusader"), after a strong ask. Without the
+    -- profession's name it has to end the request ("LF Crusader",
+    -- "LF Crusader pls"), so "WTB Fiery War Axe" isn't Fiery Weapon.
+    local TAIL = { pls = true, plz = true, please = true, on = true, to = true, ["for"] = true,
+        enchant = true, ench = true, enchanter = true, tip = true, zzlink = false }
+    local function NameIn(prof, needEnd)
         local best
         for name, label in pairs(idx.names[prof] or {}) do
             local pos = PosOf(name)
-            if pos and AskedBefore(pos, false) and (not best or #name > #best) then best = name; hit.what = label end
+            local ok = pos and AskedBefore(pos, false)
+            if ok and needEnd then
+                local _, n = name:gsub("%S+", "")
+                local nextw = words[pos + n]
+                ok = nextw == nil or TAIL[nextw] == true or nextw:match("^%d") ~= nil
+            end
+            if ok and (not best or #name > #best) then best = name; hit.what = label end
         end
         return best
     end
     local matchedName
-    if hit and not hit.what then matchedName = NameIn(hit.prof) end
+    if hit and not hit.what then matchedName = NameIn(hit.prof, false) end
     if not hit then
         for prof in pairs(idx.profs) do
             hit = { prof = prof }
-            matchedName = NameIn(prof)
+            matchedName = NameIn(prof, true)
             if matchedName then break end
             hit = nil
         end
