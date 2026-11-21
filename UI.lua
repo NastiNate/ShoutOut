@@ -1956,7 +1956,7 @@ function ns.CreateUI()
 
     local inner = W.Panel(sp)
     inner:SetPoint("TOP", 0, -12)
-    inner:SetSize(420, 690)
+    inner:SetSize(420, 735)
     local st = W.Text(inner, 14, col.text)
     st:SetText("Settings")
     st:SetPoint("TOPLEFT", 16, -14)
@@ -2040,26 +2040,10 @@ function ns.CreateUI()
         if ns.UpdateMinimapButton then ns.UpdateMinimapButton() end
     end)
     ui.cbMinimap:SetPoint("TOPLEFT", sMap, "BOTTOMLEFT", 0, -12)
-    -- what the button does, one per line
-    local HELP = {
-        { "Left-click", "Open Shout Out" },
-        { "Right-click", "Settings" },
-        { "Middle-click", "Hide button" },
-    }
-    for i, row in ipairs(HELP) do
-        local colX = 0
-        local rowY = -10 - (i - 1) * 16
-        local k = W.Text(inner, 10, col.text)
-        k:SetText(row[1])
-        k:SetWidth(78)
-        k:SetPoint("TOPLEFT", ui.cbMinimap, "BOTTOMLEFT", 20 + colX, rowY)
-        local v = W.Text(inner, 10, col.dim)
-        v:SetText(row[2])
-        v:SetPoint("LEFT", k, "RIGHT", 6, 0)
-    end
+    W.Tooltip(ui.cbMinimap, "Minimap button", "Left-click: open Shout Out\nRight-click: Settings\nMiddle-click: hide the button\nDrag it around the minimap to move it.")
 
     -- Preview: build ads for a profession this character doesn't have
-    local sPrev = Section(ui.cbMinimap, "Preview a profession", -72)
+    local sPrev = Section(ui.cbMinimap, "Preview a profession")
     local prevNote = W.Text(inner, 10, col.dim)
     prevNote:SetPoint("TOPLEFT", sPrev, "BOTTOMLEFT", 0, -6)
     prevNote:SetText("Pretend you know every recipe. Previewed ads can only be sent as a test.")
@@ -2137,7 +2121,7 @@ function ns.CreateUI()
 
     -- whispers
     ui.lSrcRow = lSrc
-    local sInv = Section(lSrc, "Whispers", -20)
+    local sInv = Section(lSrc, "Customers", -20)
     ui.sInv = sInv
     ui.cbInvite = W.Check(inner, "Auto-invite when someone whispers \"inv\" or \"invite\"", function(v)
         ns.db.settings.autoInvite = v
@@ -2151,6 +2135,23 @@ function ns.CreateUI()
     invNote:SetWordWrap(true)
     invNote:SetText("Using LayerSwap or a similar layer-hopping addon? Turn off its hosting / auto-invite while selling: it treats \"inv\" whispers as layer requests and may remove buyers from your group right away.")
     W.Tooltip(ui.cbInvite, "Auto-invite", "When a whisper is just \"inv\" or \"invite\" (any capitals), Shout Out sends that player a group invite, so customers can come straight to you. Longer whispers are left alone. If LayerSwap is hosting swaps, it already invites these whispers, so Shout Out leaves them to it.")
+
+    -- Customer radar: buyers asking in chat for what you sell
+    ui.cbRadar = W.Check(inner, "Customer radar", function(v) ns.db.settings.radar = v end)
+    ui.cbRadar:SetPoint("TOPLEFT", invNote, "BOTTOMLEFT", -20, -10)
+    W.Tooltip(ui.cbRadar, "Customer radar", "Watches Trade, Services, General, /say and /yell for people looking for what you sell, like \"LF enchanter\", \"LF ench Fiery\" or a linked recipe, and shows a small card with Invite, Whisper and Ignore. Only professions you really have (not previewed) and have an ad for. Capitals don't matter.")
+    ui.cbRadarSound = W.Check(inner, "Sound", function(v) ns.db.settings.radarSound = v end)
+    AtColumn(ui.cbRadarSound, ui.cbRadar)
+    W.Tooltip(ui.cbRadarSound, "Radar sound", "Plays the whisper sound when a customer card pops up.")
+    ui.cbRadarAuto = W.Check(inner, "Auto-invite exact requests", function(v) ns.db.settings.radarAuto = v end)
+    ui.cbRadarAuto:SetPoint("TOPLEFT", ui.cbRadar, "BOTTOMLEFT", 0, -8)
+    W.Tooltip(ui.cbRadarAuto, "Auto-invite exact requests", "Invites on its own only when the whole message is exactly a request: \"LF enchanter\", \"LF ench\", \"LF enchanter Fiery\", \"LF enchant Crusader\" (any capitals, and only for things you make). Anything longer, like \"LF enchanter to DE my stuff\", just gets the card.")
+    local lWhisper = W.Text(inner, 11, col.text)
+    lWhisper:SetText("Radar whisper")
+    lWhisper:SetPoint("TOPLEFT", ui.cbRadarAuto, "BOTTOMLEFT", 0, -14)
+    ui.radarWhisper = W.Edit(inner, COLW, 20, function(t) ns.db.settings.radarWhisper = t end, 200)
+    AtColumn(ui.radarWhisper, lWhisper, COLW)
+    W.Tooltip(ui.radarWhisper, "Radar whisper", "What the Whisper button on a customer card sends.")
 
     local resetPos = W.Button(inner, "Reset window positions", 160, 22)
     resetPos:SetPoint("BOTTOMLEFT", 16, 16)
@@ -2166,6 +2167,10 @@ function ns.CreateUI()
         for _, cb in ipairs(ui.previewChecks) do cb:SetChecked(ns.db.preview[cb.prof]) end
         ui.cbAH:SetChecked(ns.db.settings.ahPrices)
         ui.cbInvite:SetChecked(ns.db.settings.autoInvite)
+        ui.cbRadar:SetChecked(ns.db.settings.radar)
+        ui.cbRadarSound:SetChecked(ns.db.settings.radarSound)
+        ui.cbRadarAuto:SetChecked(ns.db.settings.radarAuto)
+        if not ui.radarWhisper:HasFocus() then ui.radarWhisper:SetText(ns.db.settings.radarWhisper or "") end
         ns.UpdatePriceSettings()
         ui.reloadBtn:SetShown(ns.db.settings.theme ~= W.themeKey)
     end)

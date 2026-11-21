@@ -8,7 +8,7 @@ ns.ICON_TITLE = "Interface\\AddOns\\ShoutOut\\Media\\IconTitle"
 ns.ICON_MINIMAP = "Interface\\AddOns\\ShoutOut\\Media\\IconMinimap" -- the LFW megaphone (Nate's artwork, 256x256)
 ShoutOut = ns -- global handle for macros: /run ShoutOut.Post()
 
-ns.VERSION = "1.0.3"
+ns.VERSION = "1.1.0"
 ns.MAX_LEN = 255   -- characters players see (links count as their [Name])
 ns.MAX_RAW = 1000  -- full length incl. hidden link code. WoW Forever takes far more than
                    -- the 448 once measured (10 recipe links in one line post fine), so
@@ -113,6 +113,10 @@ end
 -- Saved variables
 -------------------------------------------------------------------------------
 local DEFAULT_SETTINGS = {
+    radar      = true,    -- Customer radar: pop up when someone asks for what you sell
+    radarAuto  = false,   -- ...and invite on its own when the message is exactly "LF enchanter" etc.
+    radarSound = true,
+    radarWhisper = "Hey! I can help with that. Want an invite?",
     sep        = " | ",
     slotLabels = true,
     rotate     = true,
@@ -1941,7 +1945,7 @@ ev:RegisterEvent("ADDON_LOADED")
 ev:RegisterEvent("PLAYER_LOGIN")
 pcall(ev.RegisterEvent, ev, "GET_ITEM_INFO_RECEIVED")
 for _, e in ipairs({ "TRADE_SKILL_SHOW", "TRADE_SKILL_LIST_UPDATE", "TRADE_SKILL_DATA_SOURCE_CHANGED",
-                     "NEW_RECIPE_LEARNED", "CRAFT_SHOW", "CRAFT_UPDATE", "CHAT_MSG_CHANNEL", "CHAT_MSG_WHISPER",
+                     "NEW_RECIPE_LEARNED", "CRAFT_SHOW", "CRAFT_UPDATE", "CHAT_MSG_CHANNEL", "CHAT_MSG_WHISPER", "CHAT_MSG_SAY", "CHAT_MSG_YELL",
                      "BAG_UPDATE_DELAYED", "ZONE_CHANGED_NEW_AREA", "LEARNED_SPELL_IN_TAB", "SPELLS_CHANGED" }) do
     pcall(ev.RegisterEvent, ev, e)
 end
@@ -2013,6 +2017,9 @@ ev:SetScript("OnEvent", function(_, event, arg1, ...)
         ns.OnWhisper(arg1, ...)
     elseif event == "CHAT_MSG_CHANNEL" then
         if ns.pendingTest then ns.OnChannelMessage(arg1, select(8, ...)) end
+        if ns.OnRadarMessage then ns.OnRadarMessage(arg1, (...), select(8, ...)) end
+    elseif event == "CHAT_MSG_SAY" or event == "CHAT_MSG_YELL" then
+        if ns.OnRadarMessage then ns.OnRadarMessage(arg1, (...)) end
     elseif not scanPending then
         scanPending = true
         C_Timer.After(0.5, function() scanPending = false; ns.ScanRecipes() end)

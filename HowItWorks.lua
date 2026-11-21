@@ -78,6 +78,8 @@ return {
     { "b", "Shout Out never posts on its own, because WoW only allows posting from a click or key press." },
     { "b", B .. "Reminder:" .. R .. " set the seconds between posts. When it's time, the Post button glows. You can add the auction house sound and a flashing outline on the quick-post bar." },
     { "b", B .. "Auto-invite" .. R .. " (Settings, or " .. B .. "inv" .. R .. " on the quick bar): whispers of just \"inv\" or \"invite\" get a group invite." },
+    { "b", B .. "Customer radar" .. R .. " (Settings > Customers): when someone in Trade, Services, General, /say or /yell asks for something you sell, like \"LF enchanter\", \"LF ench Fiery\" or a linked recipe, a small card pops up with " .. B .. "Invite" .. R .. ", " .. B .. "Whisper" .. R .. " and " .. B .. "Ignore" .. R .. ". Capitals don't matter. It only covers professions you really have and have an ad for. Drag the card to move it." },
+    { "b", B .. "Auto-invite exact requests" .. R .. " (off by default): invites on its own only when the whole message is exactly a request, like \"LF enchanter\", \"LF ench\" or \"LF enchant Crusader\". Anything longer just gets the card." },
 
     { "h", "6. Ad types", "types" },
     { "h2", "Enchanting" },

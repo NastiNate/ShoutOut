@@ -2,7 +2,7 @@
 ## Title: |cffb48cffShout Out|r
 ## Notes: Build and post trade chat ads for your crafts, portals, summons and bag items. Packs them into the 255-character limit and rotates the rest.
 ## Author: Nate
-## Version: 1.0.3
+## Version: 1.1.0
 ## IconTexture: Interface\AddOns\ShoutOut\Media\Icon
 ## AddonCompartmentFunc: ShoutOut_OnCompartmentClick
 ## SavedVariablesPerCharacter: ShoutOutDB
@@ -23,4 +23,5 @@ Widgets.lua
 HowItWorks.lua
 UI.lua
 MiniBar.lua
+Radar.lua
 Minimap.lua

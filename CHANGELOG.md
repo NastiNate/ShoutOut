@@ -1,5 +1,11 @@
 # Shout Out changelog
 
+## 1.1.0 (November 2026)
+
+- **Customer radar:** when someone in Trade, Services, General, /say or /yell asks for something you sell ("LF enchanter", "LF ench Fiery", a linked recipe), a small card pops up with Invite, Whisper and Ignore. Capitals don't matter. Settings > Customers.
+- **Auto-invite exact requests** (off by default): invites on its own only when the whole message is exactly a request, like "LF enchanter" or "LF enchant Crusader".
+- The minimap button's click guide moved into its tooltip in Settings, to make room.
+
 ## 1.0.3 (November 2026)
 
 - The silver and copper price boxes are back to their full width, so both digits show while you type.
