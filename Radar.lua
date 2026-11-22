@@ -206,11 +206,7 @@ local function Short(name) return (Ambiguate and Ambiguate(name, "short")) or na
 
 -- true only when the invite really went out (WoW refuses full groups and
 -- non-leaders without telling us, so ns.CanInvite checks first)
-local function Invite(name)
-    if not ns.CanInvite() then return false end
-    local invite = (C_PartyInfo and C_PartyInfo.InviteUnit) or InviteUnit
-    if invite then return (pcall(invite, name)) end
-end
+local function Invite(name) return ns.InviteName(name) end
 
 local function Layout()
     local y = -26

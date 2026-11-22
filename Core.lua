@@ -116,6 +116,7 @@ local DEFAULT_SETTINGS = {
     radar      = true,    -- Customer radar: pop up when someone asks for what you sell
     radarAuto  = false,   -- ...and invite on its own when the message is exactly "LF enchanter" etc.
     radarSound = true,
+    autoRaid   = true,    -- turn a full party into a raid so invites keep going
     radarWhisper = "Hey! I can help with that. Want an invite?",
     sep        = " | ",
     slotLabels = true,
@@ -1969,16 +1970,51 @@ end
 -- Can you invite someone right now? WoW refuses an invite into a full group,
 -- or from someone who isn't the leader (or a raid assistant), without telling
 -- the addon, so check first. Returns true, or false and a short reason.
+-- Returns true (plus "raid" when the party has to become a raid first),
+-- or false plus "Group full" / "Not leader".
 function ns.CanInvite()
     local inGroup = type(IsInGroup) == "function" and IsInGroup() == true
     if not inGroup then return true end
     local raid = type(IsInRaid) == "function" and IsInRaid() == true
     local n = type(GetNumGroupMembers) == "function" and tonumber(GetNumGroupMembers()) or 0
-    if n >= (raid and 40 or 5) then return false, "Group full" end
     local lead = type(UnitIsGroupLeader) == "function" and UnitIsGroupLeader("player") == true
     local assist = raid and type(UnitIsGroupAssistant) == "function" and UnitIsGroupAssistant("player") == true
-    if not (lead or assist) then return false, "Not leader" end
+    if raid then
+        if n >= 40 then return false, "Group full" end
+        if not (lead or assist) then return false, "Not leader" end
+        return true
+    end
+    if not lead then return false, "Not leader" end
+    if n >= 5 then
+        if ns.db and ns.db.settings.autoRaid == true then return true, "raid" end
+        return false, "Group full"
+    end
     return true
+end
+
+local function ConvertToRaidNow()
+    local f = (C_PartyInfo and C_PartyInfo.ConvertToRaid) or ConvertToRaid
+    if type(f) ~= "function" then return false end
+    return (pcall(f))
+end
+
+-- Invites name, turning a full party into a raid first when that's turned on.
+-- The raid change takes a moment to reach the server, so that invite waits
+-- a second. Returns true when an invite went out (or is on its way).
+function ns.InviteName(name)
+    local can, how = ns.CanInvite()
+    if not can then return false end
+    local invite = (C_PartyInfo and C_PartyInfo.InviteUnit) or InviteUnit
+    if type(invite) ~= "function" then return false end
+    if how == "raid" then
+        if not ConvertToRaidNow() then return false end
+        ns.Print("Your party was full, so it's a raid now.")
+        if C_Timer and C_Timer.After then
+            C_Timer.After(1, function() pcall(invite, name) end)
+            return true
+        end
+    end
+    return (pcall(invite, name))
 end
 
 function ns.OnWhisper(msg, sender)
@@ -1995,13 +2031,10 @@ function ns.OnWhisper(msg, sender)
     local can, why = ns.CanInvite()
     if not can then
         ns.Print("Couldn't invite |cffffffff" .. who .. "|r (they whispered \"" .. msg .. "\"): " ..
-            (why == "Group full" and "your group is full." or "you're not the group leader."))
+            (why == "Group full" and (ns.db.settings.autoRaid and "your raid is full." or "your party is full (turn on \"Turn a full party into a raid\" in Settings to keep inviting).") or "you're not the group leader."))
         return
     end
-    local invite = (C_PartyInfo and C_PartyInfo.InviteUnit) or InviteUnit
-    if not invite then return end
-    local ok = pcall(invite, sender)
-    if ok then ns.Print("Invited |cffffffff" .. who .. "|r (they whispered \"" .. msg .. "\").") end
+    if ns.InviteName(sender) then ns.Print("Invited |cffffffff" .. who .. "|r (they whispered \"" .. msg .. "\").") end
 end
 ev:SetScript("OnEvent", function(_, event, arg1, ...)
     if event == "ADDON_LOADED" then
