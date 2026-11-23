@@ -258,6 +258,7 @@ local function NewCard(sender, msg, hit)
     inv.text:SetFont(W.FONT, 10, "")
     inv:SetPoint("BOTTOMLEFT", 8, 5)
     local wsp = W.Button(c, "Whisper", 70, 18)
+    c.wsp = wsp
     wsp.text:SetFont(W.FONT, 10, "")
     wsp:SetPoint("LEFT", inv, "RIGHT", 4, 0)
     local ign = W.Button(c, "Ignore", 60, 18, "ghost")
@@ -285,16 +286,27 @@ local function NewCard(sender, msg, hit)
         if can then return "Sends " .. Short(sender) .. " a group invite." end
         return (why == "Group full" and "Your group is full. Make room, then click to invite." or "Only the group leader can invite. Ask them to invite, or leave the group, then click.") .. " The Whisper button still works."
     end)
-    wsp:SetScript("OnClick", function()
+    -- {prof} becomes your [Enchanting] link (or plain "Enchanting" until
+    -- you've opened your Enchanting window once)
+    local function WhisperText()
         local text = ns.db.settings.radarWhisper
         if not text or text == "" then return end
+        text = text:gsub("{[Pp][Rr][Oo][Ff]}", function() return ns.ProfLink(hit.prof) or pack.name end)
+        return (ns.ExpandTokens(text, { prof = hit.prof }))
+    end
+    wsp:SetScript("OnClick", function()
+        local text = WhisperText()
+        if not text then return end
         local send = (C_ChatInfo and C_ChatInfo.SendChatMessage) or SendChatMessage
         pcall(send, text, "WHISPER", nil, sender)
         wsp:SetLabel("Sent")
         wsp:SetEnabled(false)
         wsp:SetAlpha(0.6)
     end)
-    W.Tooltip(wsp, "Whisper them", function() return "Sends: \"" .. (ns.db.settings.radarWhisper or "") .. "\"\nChange it in Settings > Customers." end)
+    W.Tooltip(wsp, "Whisper them", function()
+        local note = ns.ProfLink(hit.prof) and "" or "\nOpen your " .. pack.name .. " window once to make {prof} a clickable link."
+        return "Sends: \"" .. (WhisperText() or "") .. "\"\nChange it in Settings > Customers." .. note
+    end)
     ign:SetScript("OnClick", function() Remove(c) end)
     c.Invited = Invited
     C_Timer.After(LIFETIME, function() if c:IsShown() then Remove(c) end end)

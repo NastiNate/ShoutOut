@@ -117,7 +117,7 @@ local DEFAULT_SETTINGS = {
     radarAuto  = false,   -- ...and invite on its own when the message is exactly "LF enchanter" etc.
     radarSound = true,
     autoRaid   = true,    -- turn a full party into a raid so invites keep going
-    radarWhisper = "Hey! I can help with that. Want an invite?",
+    radarWhisper = "Hey! I can help with that, here's my {prof}. Want an invite?",
     sep        = " | ",
     slotLabels = true,
     rotate     = true,
@@ -225,6 +225,10 @@ function ns.InitDB()
     if db.slotOrder then db.slotOrders.enchanting = db.slotOrder; db.slotOrder = nil end
     -- 1.0.2: the old 448 (and any limit learned against it) held ads back; start
     -- clean, the post itself finds the real limit if there is one
+    -- the old radar whisper default gets your profession link
+    if db.settings.radarWhisper == "Hey! I can help with that. Want an invite?" then
+        db.settings.radarWhisper = DEFAULT_SETTINGS.radarWhisper
+    end
     if not db.limitsV2 then
         db.settings.maxRaw, db.settings.maxVis = nil, nil
         db.limitsV2 = true

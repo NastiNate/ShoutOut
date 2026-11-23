@@ -2155,7 +2155,7 @@ function ns.CreateUI()
     lWhisper:SetPoint("TOPLEFT", ui.cbRadarAuto, "BOTTOMLEFT", 0, -14)
     ui.radarWhisper = W.Edit(inner, COLW, 20, function(t) ns.db.settings.radarWhisper = t end, 200)
     AtColumn(ui.radarWhisper, lWhisper, COLW)
-    W.Tooltip(ui.radarWhisper, "Radar whisper", "What the Whisper button on a customer card sends.")
+    W.Tooltip(ui.radarWhisper, "Radar whisper", "What the Whisper button on a customer card sends. {prof} becomes your clickable [Enchanting] link, so they can see everything you know (open your Enchanting window once so Shout Out can grab it).")
 
     local resetPos = W.Button(inner, "Reset window positions", 160, 22)
     resetPos:SetPoint("BOTTOMLEFT", 16, 16)

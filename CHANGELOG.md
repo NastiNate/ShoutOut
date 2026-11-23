@@ -4,6 +4,7 @@
 
 - **Customer radar** (Enchanting): when someone in Trade, Services, General, /say or /yell asks for an enchanter or an enchant you know ("LF enchanter", "LF ench Fiery", a linked recipe), a small card pops up with Invite, Whisper and Ignore. Capitals don't matter. Settings > Customers.
 - The radar skips sellers ("WTS", "LFW", "on AH", "for sale") and only treats "anyone"/"any" as a request right before a profession word ("any enchanters around?"), so ads like "if anyone wants a pair… stacks with Fiery Enchant" don't pop up. Its sound is a soft map ping, not the whisper sound.
+- The radar card's **Whisper** button links your [Enchanting]: put {prof} in the radar whisper (it's in the default) and it becomes your clickable profession link, captured when you open your Enchanting window.
 - **Auto-invite exact requests** (off by default): invites on its own only when the whole message is exactly a request, like "LF enchanter" or "LF enchant Crusader".
 - **Turn a full party into a raid** (on by default): when your party has 5 and another customer gets invited, Shout Out makes it a raid first and keeps inviting, up to 40. Settings > Customers.
 - The radar also skips other enchanters advertising ("Enchanter LF work", "available", "tips appreciated", a linked [Enchanting] window), and words inside someone's item link ("WTB [Fiery War Axe]") no longer count.
