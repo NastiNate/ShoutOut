@@ -1,10 +1,8 @@
 -- Shout Out: Customer radar
 -- Watches public chat for people looking for what you sell ("LF enchanter",
 -- "LF ench Fiery", "WTB [Enchant Weapon - Crusader]") and pops up a small
--- card with Invite / Whisper / Ignore. Optionally invites on its own, but
--- only when the whole message is exactly a request: "LF enchanter",
--- "LF ench", "LF enchanter Fiery", "LF enchant Crusader". Anything longer
--- ("LF enchanter to DE my stuff") only gets the card.
+-- card with Invite / Whisper / Ignore. It never invites on its own: you read
+-- the message first and choose.
 
 local _, ns = ...
 local W = ns.W
@@ -242,14 +240,15 @@ local function MakeFrame()
     frame:Hide()
 end
 
-local function NewCard(sender, msg, hit)
+local ClassColored
+local function NewCard(sender, msg, hit, guid)
     local c = CreateFrame("Frame", nil, frame, "BackdropTemplate")
     W.Backdrop(c, col.input, col.border)
     c:SetHeight(58)
     local who = W.Text(c, 11, col.text)
     who:SetPoint("TOPLEFT", 8, -6)
     local pack = ns.Pack(hit.prof)
-    who:SetText("|cffffffff" .. Short(sender) .. "|r  |cff8a8a96" .. pack.name .. (hit.what and (" · " .. hit.what) or "") .. "|r")
+    who:SetText(ClassColored(Short(sender), guid) .. "  |cff8a8a96" .. pack.name .. (hit.what and (" · " .. hit.what) or "") .. "|r")
     local said = W.Text(c, 10, { 1, 0.75, 0.75, 1 })
     said:SetPoint("TOPLEFT", 8, -21)
     said:SetPoint("RIGHT", c, "RIGHT", -8, 0)
@@ -258,7 +257,7 @@ local function NewCard(sender, msg, hit)
     inv.text:SetFont(W.FONT, 10, "")
     inv:SetPoint("BOTTOMLEFT", 8, 5)
     local wsp = W.Button(c, "Whisper", 70, 18)
-    c.wsp = wsp
+    c.wsp = wsp; c.inv = inv; c.who = who
     wsp.text:SetFont(W.FONT, 10, "")
     wsp:SetPoint("LEFT", inv, "RIGHT", 4, 0)
     local ign = W.Button(c, "Ignore", 60, 18, "ghost")
@@ -313,8 +312,21 @@ local function NewCard(sender, msg, hit)
     return c
 end
 
+-- the sender's name in their class color, when the chat event gave us their GUID
+ClassColored = function(name, guid)
+    local cls
+    if type(guid) == "string" and guid ~= "" and type(GetPlayerInfoByGUID) == "function" then
+        local ok, _, c = pcall(GetPlayerInfoByGUID, guid)
+        if ok then cls = c end
+    end
+    local cc = type(cls) == "string" and RAID_CLASS_COLORS and RAID_CLASS_COLORS[cls]
+    local hex = cc and (cc.colorStr or (cc.r and string.format("ff%02x%02x%02x", cc.r * 255, cc.g * 255, cc.b * 255)))
+    return "|c" .. (type(hex) == "string" and hex or "ffffffff") .. name .. "|r"
+end
+ns.RadarClassColored = ClassColored
+
 -- one chat line from a public channel, /say or /yell
-function ns.OnRadarMessage(msg, sender, channelBaseName)
+function ns.OnRadarMessage(msg, sender, channelBaseName, guid)
     local s = ns.db and ns.db.settings
     if not s or not s.radar or type(sender) ~= "string" or sender == "" then return end
     if Short(sender) == PlayerName() then return end
@@ -327,20 +339,12 @@ function ns.OnRadarMessage(msg, sender, channelBaseName)
     if UnitInParty and (UnitInParty(Short(sender)) or (UnitInRaid and UnitInRaid(Short(sender)))) then return end
 
     if not frame then MakeFrame() end
-    local card = NewCard(sender, msg, hit)
+    local card = NewCard(sender, msg, hit, guid)
     table.insert(cards, 1, card)
     while #cards > MAX_CARDS do Remove(cards[#cards]) end
     Layout()
     -- a map-ping blip, so a card never sounds like a real whisper
     if s.radarSound and PlaySound and SOUNDKIT then PlaySound(SOUNDKIT.MAP_PING or 3175, "Master") end
-
-    -- exactly "LF enchanter" (etc.): invite on its own, if that's turned on
-    if hit.exact and s.radarAuto and not ns.OtherInviter() then
-        if Invite(sender) then
-            card.Invited()
-            ns.Print("Invited |cffffffff" .. Short(sender) .. "|r (they said \"" .. ns.PlainText(msg) .. "\").")
-        end
-    end
 end
 
 ns.radarCards = cards

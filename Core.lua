@@ -114,7 +114,6 @@ end
 -------------------------------------------------------------------------------
 local DEFAULT_SETTINGS = {
     radar      = true,    -- Customer radar: pop up when someone asks for what you sell
-    radarAuto  = false,   -- ...and invite on its own when the message is exactly "LF enchanter" etc.
     radarSound = true,
     autoRaid   = true,    -- turn a full party into a raid so invites keep going
     radarWhisper = "Hey! I can help with that, here's my {prof}. Want an invite?",
@@ -226,6 +225,7 @@ function ns.InitDB()
     -- 1.0.2: the old 448 (and any limit learned against it) held ads back; start
     -- clean, the post itself finds the real limit if there is one
     -- the old radar whisper default gets your profession link
+    db.settings.radarAuto = nil -- auto-invite from the radar was removed in 1.1.0
     if db.settings.radarWhisper == "Hey! I can help with that. Want an invite?" then
         db.settings.radarWhisper = DEFAULT_SETTINGS.radarWhisper
     end
@@ -2076,9 +2076,9 @@ ev:SetScript("OnEvent", function(_, event, arg1, ...)
         ns.OnWhisper(arg1, ...)
     elseif event == "CHAT_MSG_CHANNEL" then
         if ns.pendingTest then ns.OnChannelMessage(arg1, select(8, ...)) end
-        if ns.OnRadarMessage then ns.OnRadarMessage(arg1, (...), select(8, ...)) end
+        if ns.OnRadarMessage then ns.OnRadarMessage(arg1, (...), select(8, ...), (select(11, ...))) end
     elseif event == "CHAT_MSG_SAY" or event == "CHAT_MSG_YELL" then
-        if ns.OnRadarMessage then ns.OnRadarMessage(arg1, (...)) end
+        if ns.OnRadarMessage then ns.OnRadarMessage(arg1, (...), nil, (select(11, ...))) end
     elseif not scanPending then
         scanPending = true
         C_Timer.After(0.5, function() scanPending = false; ns.ScanRecipes() end)
